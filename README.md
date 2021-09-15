@@ -9,6 +9,8 @@
    <figcaption>Fig 1: Stem canker</figcaption>
 </figure>
 
+--- 
+
 <figure>
    <img src="figures/head_rot.png" width="300" height="300">
    <figcaption>Fig 2: Head rot</figcaption>
@@ -18,7 +20,8 @@
 
 The goal of this study is to track the evolution of D. helianthi diseases across the Buenos Aires departments, since 2013 to the present. 
 
-Variables codings
+Variables coding contained in dat_geo imported through `load("data/tidy_dat.RData")`
+
 
 | id_variable | detail |
 | ------- | ------ |
