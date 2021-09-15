@@ -40,5 +40,5 @@ Evolution of the *D. helieanthi* presence (stem canker or head rot positive fiel
 
 <figure>
    <img src="figures/mapa_evol.png" width="600" height="450">
-   <figcaption>Fig 1: Stem canker</figcaption>
+   <figcaption>D. helianthi prevalence </figcaption>
 </figure>
