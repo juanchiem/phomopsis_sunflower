@@ -1,6 +1,5 @@
 # Emergence of Diaporte diseases of sunflower in Argentina
 
-
 *Diaporte helianthi* is the main casual agent of **Phomopsis stem canker**, a widespread and yield limiting disease of sunflower (*Helianthus annuus L.*). In the last few years head rot of sunflower was also observed as a consequence of *D. helianthi* infections.  
 
 
@@ -35,3 +34,9 @@ Variables coding contained in dat_geo imported through `load("data/tidy_dat.RDat
 | disease | stem canker or head rot |
 | intensity     | disease intensity: not registered; absent; present (low; medium, or; high)  |
 
+Evolution of the *D. helieanthi* presence (stem canker or head rot positive fields) along the period 2013-2021 in the main sunflower growing region of Argentina (southern Buenos Aires province) 
+
+<figure>
+   <img src="figures/mapa_evol.png" width="600" height="450">
+   <figcaption>Fig 1: Stem canker</figcaption>
+</figure>
