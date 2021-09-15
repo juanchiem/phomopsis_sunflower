@@ -42,7 +42,7 @@ Calculate prevalence within year / department
 ```{r}
 dat_geo %>% # count(nivel)
   group_by(year, NAME_2) %>% 
-  summarise(prev=mean(inoc_presence)) -> sum_dat
+  summarise(prevalence = mean(inoc_presence)*100) -> sum_dat
 ```
 
 ```{r}
@@ -54,10 +54,17 @@ BSAS %>%
   ggplot() + 
   geom_sf(fill="white") + 
   geom_sf(data=full %>% drop_na(year),
-          aes(fill=prev)) +   facet_wrap("year", ncol=4) +
+          aes(fill=prevalence)) +   
+  facet_wrap("year", ncol=4) +
   scale_fill_viridis_c(direction = -1)+
-  theme_void()
+  theme_void() + 
+  theme(plot.background = element_rect(fill = "#EEEEEE"))
 ```
+
+```{r}
+ggsave(last_plot(), file = "figures/mapa_evol.png", w=6, h=5)
+```
+
 
 ```{r}
 dat_geo %>% 

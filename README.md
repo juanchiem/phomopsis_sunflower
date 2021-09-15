@@ -34,6 +34,8 @@ Variables coding contained in dat_geo imported through `load("data/tidy_dat.RDat
 | disease | stem canker or head rot |
 | intensity     | disease intensity: not registered; absent; present (low; medium, or; high)  |
 
+---
+
 Evolution of the *D. helieanthi* presence (stem canker or head rot positive fields) along the period 2013-2021 in the main sunflower growing region of Argentina (southern Buenos Aires province) 
 
 <figure>
