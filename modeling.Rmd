@@ -1,0 +1,10 @@
+# Model fitting
+
+```{r}
+library(tidyverse)
+library(sf)
+```
+
+```{r}
+load("data/tidy_dat.RData")
+```
