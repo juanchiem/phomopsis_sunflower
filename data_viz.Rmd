@@ -1,0 +1,74 @@
+# Data visualization 
+
+```{r}
+library(tidyverse)
+library(sf)
+```
+
+```{r}
+load("data/tidy_dat.RData")
+```
+
+
+```{r}
+tidy_dat %>% 
+  mutate(presence = intensity %in% c("LOW","MEDIUM","HIGH")) %>%  
+  pivot_wider(names_from = "disease", values_from = "presence") %>% 
+  rowwise() %>% 
+  mutate(inoc_presence = sum(STEM_CANKER, HEAD_ROT, na.rm = T)) -> dat 
+```
+
+```{r}
+dat_sf <- dat %>%   
+    st_as_sf(coords = c('lon', 'lat'), 
+           crs = st_crs(BSAS)) %>% 
+  ungroup()
+```
+
+```{r}
+dat_sf %>% arrange(-inoc_presence)
+```
+
+Find department of each coordinate
+
+```{r}
+int <- sf::st_intersects(dat_sf, BSAS)
+
+dat_geo <- dat_sf %>% mutate(NAME_2 = as.character(BSAS$NAME_2[unlist(int)])) 
+```
+
+Calculate prevalence within year / department
+
+```{r}
+dat_geo %>% # count(nivel)
+  group_by(year, NAME_2) %>% 
+  summarise(prev=mean(inoc_presence)) -> sum_dat
+```
+
+```{r}
+full <- left_join(BSAS, st_drop_geometry(sum_dat))
+```
+
+```{r}
+BSAS %>% 
+  ggplot() + 
+  geom_sf(fill="white") + 
+  geom_sf(data=full %>% drop_na(year),
+          aes(fill=prev)) +   facet_wrap("year", ncol=4) +
+  scale_fill_viridis_c(direction = -1)+
+  theme_void()
+```
+
+```{r}
+dat_geo %>% 
+  dplyr::mutate(lon = sf::st_coordinates(.)[,1],
+                lat = sf::st_coordinates(.)[,2]) %>%
+  st_drop_geometry() -> dat_geo_df 
+
+dat_geo_df %>% 
+  googlesheets4::write_sheet(sheet_retsave, sheet="dat_analysis")
+```
+
+```{r}
+save(BSAS, tidy_dat, dat_geo, dat_geo_df, file="data/tidy_dat.RData")
+```

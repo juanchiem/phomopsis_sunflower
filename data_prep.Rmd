@@ -1,0 +1,181 @@
+# Data wrangling
+
+```{r}
+library(tidyverse)
+library(sf)
+```
+
+Get shape files of Buenos Aires province
+
+```{r}
+BSAS <- raster::getData("GADM",country="ARG",level=2)  %>%
+  st_as_sf()%>% 
+  st_transform(crs = 4326) %>%
+  dplyr::filter(NAME_1 == "Buenos Aires") %>% 
+  select(NAME_2,geometry)
+```
+
+Get survey data 
+
+```{r}
+library(googlesheets4)
+# gs4_auth(email = "edwardsmolina@gmail.com")
+# googledrive::drive_auth(email = "edwardsmolina@gmail.com")
+sheet_retsave <- gs4_get(gs4_find("retsave_girasol")$id)
+```
+
+```{r}
+raw <- read_sheet(sheet_retsave, 
+                  sheet = "raw", guess_max = 10000, skip=0) %>% 
+  janitor::clean_names() %>% 
+  mutate_at(c("latitud", "longitud"), as.double)
+```
+
+```{r}
+skimr::skim(raw)
+```
+
+Keep only Diaporte helianthi diseases (stem canker and head rot)
+
+```{r}
+diaporte <- raw %>% 
+  dplyr::filter(str_detect(enfermedad, "CANCRO|DIAPORTE")) %>%
+  mutate(id = row_number()) 
+diaporte
+```
+
+Quick look at lat/lon data
+
+```{r}
+BSAS %>% 
+  ggplot()+
+  geom_sf()+
+  geom_text(data= diaporte, 
+            aes(x=longitud, y=latitud, label=id), size=2) 
+```
+
+Some points are out of continent boundaries
+
+```{r}
+diaporte1 <- diaporte %>%  
+  mutate(longitud = case_when(
+    id == 2 ~ -63.1,
+    TRUE ~ longitud)) %>%
+  mutate(latitud = case_when( 
+    id == 344 ~ -37.8,
+    id == 345 ~ -37.8,
+    TRUE ~ latitud))  
+```
+
+```{r}
+BSAS %>% 
+  ggplot()+
+  geom_sf()+
+  geom_text(data= diaporte1, 
+            aes(x=longitud, y=latitud, label=id), size=2) 
+```
+
+It's ok now...
+
+```{r}
+diaporte1 %>% skimr::skim()
+```
+
+There are some missing lat/lon values. We will retrieve them from their department centroid
+
+```{r}
+# coords <- BSAS_MUNI %>%
+#     st_centroid() %>% 
+#     dplyr::mutate(lon_c = sf::st_coordinates(.)[,1],
+#                   lat_c = sf::st_coordinates(.)[,2]) 
+```
+
+```{r}
+diaporte1 %>%
+  group_by(partido) %>%
+  summarise(
+    latitud_m=mean(latitud, na.rm = T),
+    longitud_m=mean(longitud, na.rm = T)) -> coords
+```
+
+```{r}
+diaporte1 %>% 
+  filter(is.na(latitud|longitud))%>% 
+  left_join(coords, by="partido") %>% 
+  mutate(latitud = coalesce(latitud_m, latitud)) %>%  #
+  mutate(longitud = coalesce(longitud_m, longitud)) %>% 
+  select(-latitud_m, -longitud_m) -> diaporte2
+```
+
+```{r}
+diaporte3 <- diaporte2 %>%
+  bind_rows(diaporte1 %>% filter(!is.na(latitud|longitud)))
+```
+
+```{r}
+diaporte3 %>% skimr::skim()
+```
+
+```{r}
+BSAS %>% 
+  ggplot()+
+  geom_sf()+
+  geom_text(data= diaporte3, 
+            aes(x=longitud, y=latitud, label=id), size=2) 
+```
+
+There are still two point in the ocean
+
+```{r}
+diaporte3 <- diaporte3 %>%  
+  mutate(longitud = case_when(
+    id == 510 | id == 511 ~ -58.2,
+    TRUE ~ longitud)) 
+```
+
+```{r}
+BSAS %>% 
+  ggplot()+
+  geom_sf()+
+  geom_text(data= diaporte3, 
+            aes(x=longitud, y=latitud, label=id), size=2) 
+```
+
+```{r}
+diaporte3 %>% # distinct(cultivo_antecesor)
+ mutate(sampling_date = lubridate::ymd(fecha_de_toma_de_muestra)) %>% 
+  select(year=campana, sampling_date, previous_crop= cultivo_antecesor, growth_stage= feno, lat=latitud, lon=longitud, disease=enfermedad, intensity=nivel) %>% 
+  arrange(sampling_date) %>% 
+  mutate(id = row_number()) %>% 
+  select(id, everything()) %>% 
+  mutate(
+    previous_crop= recode(previous_crop, 
+                          "Soja" = "soybean",
+                          "Trigo" = "wheat",
+                          "Girasol" = "sunflower",
+                          "MaÃ­z" = "corn",
+                          "Cebada" = "barley",
+                          "Sorgo" = "sorghum",
+                          "NO POSEE" = "NA"),
+    disease= recode(disease, "CANCRO_DEL_TALLO" = "STEM_CANKER", "PODREDUMBRE_DEL_CAPÃ­TULO_POR_DIAPORTE" = "HEAD_ROT"), 
+         intensity= recode(intensity, 
+                           "NO_REGISTRADO" = "NO_REGISTER", 
+                           "AUSENTE" = "ABSENT", 
+                           "BAJO" = "LOW", 
+                           "MEDIO" = "MEDIUM", 
+                           "ALTO" = "HIGH", 
+                           )) -> tidy_dat
+
+tidy_dat %>% 
+  write_sheet(sheet_retsave, sheet="tidy_dat")
+```
+
+```{r}
+tidy_dat %>% 
+  # select(-geometry) %>% 
+  write_csv(file="data/tidy_dat.csv")
+```
+
+```{r}
+save(tidy_dat, BSAS, file="data/tidy_dat.RData")
+```
