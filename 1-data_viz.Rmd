@@ -9,7 +9,6 @@ library(sf)
 load("data/tidy_dat.RData")
 ```
 
-
 ```{r}
 tidy_dat %>% 
   mutate(presence = intensity %in% c("LOW","MEDIUM","HIGH")) %>%  
@@ -42,7 +41,8 @@ Calculate prevalence within year / department
 ```{r}
 dat_geo %>% # count(nivel)
   group_by(year, NAME_2) %>% 
-  summarise(prevalence = mean(inoc_presence)*100) -> sum_dat
+  summarise(prevalence = mean(inoc_presence)*100, 
+            count_cases = sum(!is.na(inoc_presence))) -> sum_dat
 ```
 
 ```{r}
@@ -54,7 +54,9 @@ BSAS %>%
   ggplot() + 
   geom_sf(fill="white") + 
   geom_sf(data=full %>% drop_na(year),
-          aes(fill=prevalence)) +   
+          aes(fill=prevalence)) +
+  geom_sf_text(data=full %>% drop_na(year),
+          aes(label=count_cases))+
   facet_wrap("year", ncol=4) +
   scale_fill_viridis_c(direction = -1)+
   theme_void()  
@@ -65,6 +67,22 @@ BSAS %>%
 ggsave(last_plot(), file = "figures/mapa_evol.png", w=6, h=5, bg="white")
 ```
 
+Get department centroid 
+
+```{r}
+BSAS_cent <- st_centroid(BSAS)#  %>% st_transform(32617))
+
+# check centroid location
+ggplot() + 
+  geom_sf(data = BSAS, fill = 'white') +
+  geom_sf(data = BSAS_cent, color = 'red') 
+```
+
+```{r}
+dat_cent <- sum_dat %>% 
+  st_drop_geometry() %>% 
+  left_join(BSAS_cent, by="NAME_2")
+```
 
 ```{r}
 dat_geo %>% 
@@ -78,4 +96,28 @@ dat_geo_df %>%
 
 ```{r}
 save(BSAS, tidy_dat, dat_geo, dat_geo_df, file="data/tidy_dat.RData")
+```
+
+Sunflower production by department
+
+```{r}
+sunflower_prod %>% 
+  inner_join(BSAS %>% 
+               mutate(department = 
+           toupper(stringi::stri_trans_general(NAME_2, "Latin-ASCII"))), 
+            by= "department")-> sunflower_prod_geo
+```
+
+```{r}
+BSAS %>% 
+  ggplot() + 
+  geom_sf()+
+  geom_sf(data=sunflower_prod_geo %>% filter(year_harvest>2012), 
+          aes(geometry = geometry, fill=planting_area)) +
+  # geom_sf_text(data=full %>% drop_na(year),
+  #         aes(label=count_cases))+
+  facet_wrap("year_harvest") +
+  scale_fill_viridis_c(direction = -1)+
+  theme_void()  
+  # theme(plot.background = element_rect(fill = "#EEEEEE"))
 ```

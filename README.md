@@ -36,7 +36,7 @@ Variables coding contained in dat_geo imported through `load("data/tidy_dat.RDat
 
 ---
 
-Evolution of the *D. helianthi* presence (stem canker or head rot positive fields) along the period 2013-2021 in the main sunflower growing region of Argentina (southern Buenos Aires province) 
+Evolution of the *D. helianthi* presence (stem canker or head rot positive fields) along the period 2013-2021 in the main sunflower growing region of Argentina (southern Buenos Aires province). Numbers indicates the total of sampled fields within each department.  
 
 <figure>
    <img src="figures/mapa_evol.png" width="600" height="450">

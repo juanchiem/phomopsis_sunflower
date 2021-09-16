@@ -177,5 +177,23 @@ tidy_dat %>%
 ```
 
 ```{r}
-save(tidy_dat, BSAS, file="data/tidy_dat.RData")
+sunflower_prod <- read_csv("data/sunflower_prod.csv") %>% 
+  janitor::clean_names()%>% 
+  mutate_at(vars(department),
+          list(~stringi::stri_trans_general(.)))
+```
+
+
+```{r}
+sunflower_prod %>%
+  distinct(department)%>%
+  pull()
+
+BSAS %>% 
+  mutate(department = 
+           toupper(stringi::stri_trans_general(NAME_2, "Latin-ASCII")))
+```
+
+```{r}
+save(tidy_dat, BSAS, sunflower_prod, file="data/tidy_dat.RData")
 ```
