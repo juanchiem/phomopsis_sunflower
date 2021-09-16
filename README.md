@@ -42,3 +42,5 @@ Evolution of the *D. helianthi* presence (stem canker or head rot positive field
    <img src="figures/mapa_evol.png" width="600" height="450">
    <figcaption>D. helianthi prevalence </figcaption>
 </figure>
+
+For the purposes of this work, skip data wrangling (script 0) and start from data visualization script (tidy data will be available for starting the fun steps of the workflow) 
