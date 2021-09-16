@@ -57,12 +57,12 @@ BSAS %>%
           aes(fill=prevalence)) +   
   facet_wrap("year", ncol=4) +
   scale_fill_viridis_c(direction = -1)+
-  theme_void() + 
-  theme(plot.background = element_rect(fill = "#EEEEEE"))
+  theme_void()  
+  # theme(plot.background = element_rect(fill = "#EEEEEE"))
 ```
 
 ```{r}
-ggsave(last_plot(), file = "figures/mapa_evol.png", w=6, h=5)
+ggsave(last_plot(), file = "figures/mapa_evol.png", w=6, h=5, bg="white")
 ```
 
 
