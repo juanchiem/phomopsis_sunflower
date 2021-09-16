@@ -1,4 +1,4 @@
-# Emergence of Diaporte diseases of sunflower in Argentina
+# Emergence of Diaporthe helianthi diseases of sunflower in Argentina
 
 *Diaporthe helianthi* is the main casual agent of **Phomopsis stem canker**, a widespread and yield limiting disease of sunflower (*Helianthus annuus L.*). In the last few years head rot of sunflower was also observed as a consequence of *D. helianthi* infections.  
 
