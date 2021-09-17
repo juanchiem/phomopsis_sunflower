@@ -1,6 +1,11 @@
 # Emergence of Diaporthe helianthi diseases of sunflower in Argentina
 
-*Diaporthe helianthi* is the main casual agent of **Phomopsis stem canker**, a widespread and yield limiting disease of sunflower (*Helianthus annuus L.*). In the last few years head rot of sunflower was also observed as a consequence of *D. helianthi* infections.  
+Buenos Aires is the main growing state of sunflower (*Helianthus annuus L.*) in Argentina 
+
+<img src="figures/sunflower.png" width="600" height="450">
+
+
+*Diaporthe helianthi* is the main casual agent of **Phomopsis stem canker**, a widespread and yield limiting disease of sunflower. In the last few years head rot of sunflower was also observed as a consequence of *D. helianthi* infections.  
 
 
 <figure>
@@ -36,11 +41,20 @@ Variables coding contained in dat_geo imported through `load("data/tidy_dat.RDat
 
 ---
 
-Evolution of the *D. helianthi* presence (stem canker or head rot positive fields) along the period 2013-2021 in the main sunflower growing region of Argentina (southern Buenos Aires province). Numbers indicates the total of sampled fields within each department.  
+Evolution of the *D. helianthi* presence (stem canker or head rot positive fields) along the period 2013-2021 in the main sunflower growing region of Argentina (southern Buenos Aires province). 
 
-<figure>
-   <img src="figures/mapa_evol.png" width="600" height="450">
-   <figcaption>D. helianthi prevalence </figcaption>
-</figure>
+---
+
+Sampling fields: 
+
+<img src="figures/sampling_points.png" width="600" height="450">
+
+---
+
+Department prevalence (Numbers indicate the total of sampled fields within each department)
+
+<img src="figures/mapa_evol.png" width="600" height="450">
+
+---
 
 For the purposes of this work, skip data wrangling (script 0) and start from data visualization script (tidy data will be available for starting the fun steps of the workflow) 
