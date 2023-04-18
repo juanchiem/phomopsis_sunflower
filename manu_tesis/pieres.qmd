@@ -1,0 +1,70 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r, eval=F}
+tibble::tribble(
+        ~trat, ~rep, ~cap, ~peso_tot, ~peso_cap,
+  "sin_phoma",   1L,   3L,      239L,       797,
+  "sin_phoma",   2L,   3L,      205L,       683,
+  "sin_phoma",   3L,   4L,      251L,       628,
+  "con_phoma",   1L,   4L,      277L,       693,
+  "con_phoma",   2L,   4L,      280L,       700,
+  "con_phoma",   3L,   3L,      267L,       890,
+     "con_PC",   1L,   4L,      357L,       893,
+     "con_PC",   2L,   4L,      333L,       833,
+     "con_PC",   3L,   4L,      272L,       680,
+     "sin_PC",   1L,   4L,      287L,       718,
+     "sin_PC",   2L,   4L,      312L,       780,
+     "sin_PC",   3L,   4L,      286L,       715,
+     "con_CT",   1L,   5L,      333L,       666,
+     "con_CT",   2L,   5L,      257L,       514,
+     "con_CT",   3L,   5L,      265L,       530,
+     "sin_CT",   1L,   5L,      348L,       696,
+     "sin_CT",   2L,   5L,      312L,       624,
+     "sin_CT",   3L,   5L,      337L,       674
+  ) %>% 
+  rio::export("manu_tesis/pieres.xlsx")
+```
+
+```{r}
+dat <- rio::import(here::here("./manu_tesis/pieres.xlsx")) %>% janitor::clean_names()
+```
+
+
+
+```{r}
+dat %>% 
+  separate(trat, into = c("status", "enfermedad"), remove = T) %>% 
+  ungroup %>% 
+  droplevels() %>% 
+  ggplot() + 
+  aes(x=status, y=peso_cap) + 
+  facet_wrap("enfermedad") + 
+  geom_jitter(width=.1) + 
+  stat_summary(fun=mean, geom="crossbar", col="grey70") + 
+  stat_summary(aes(label=round(..y..)), fun=mean, geom="text") + 
+  theme_bw() + 
+  labs(y="Peso de capitulo individual (g)")
+```
+
+```{r}
+dat %>% 
+  separate(trat, into = c("status", "enfermedad"), remove = T) %>% 
+  ungroup %>% 
+  droplevels() %>% 
+  ggplot() + 
+  aes(x=status, y=aceite_bs) + 
+  facet_wrap("enfermedad") + 
+  geom_jitter(width=.1) + 
+  stat_summary(fun=mean, geom="crossbar", col="grey70") + 
+  stat_summary(aes(label=round(..y..)), fun=mean, geom="text") + 
+  theme_bw() + 
+  labs(y="Contenido de aceite (%)")
+```
